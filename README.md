@@ -36,8 +36,9 @@ BitDogLab-MusicPlayer-C é um projeto desenvolvido em C para o Raspberry Pi Pico
 
 ### Principais Métodos
 
-#### Utilização dos Leds RGB
-O principal método é o npInit, que recebe como parâmetro o pino dos Leds, por padrão fica o 7, e ele tem por responsabilidade fazer a configuração inicial dos leds
+#### Inicialização dos LEDs
+O método `npInit()` configura os LEDs Neopixel no pino especificado. Ele inicializa a máquina de estado programável (PIO) para controlar os LEDs e limpa a matriz de pixels.
+
 
 ``` C
 void npInit(uint pin) {
@@ -64,7 +65,9 @@ void npInit(uint pin) {
 ```
 
 
-npSetLed tem por função ligar o led, recebe como parametros a posição do led e as informações do RGB
+#### Definição de Cor para um LED
+A função `npSetLED()` permite definir a cor de um LED específico na matriz de LEDs. Ela recebe como parâmetros a posição do LED e os valores RGB.
+
 ``` C
 void npSetLED(const uint index, const uint8_t r, const uint8_t g, const uint8_t b) {
     leds[index].R = (uint8_t)(r * 0.1);
@@ -74,10 +77,11 @@ void npSetLED(const uint index, const uint8_t r, const uint8_t g, const uint8_t 
 ```
 
 
-npClear simplesmente limpa a matriz
-``` C
+#### Atualização dos LEDs
+A função `npWrite()` envia os dados de cor para os LEDs, garantindo que a atualização seja refletida fisicamente.
+
+```c
 void npWrite() {
-    // Escreve cada dado de 8-bits dos pixels em sequência no buffer da máquina PIO.
     for (uint i = 0; i < LED_COUNT; ++i) {
       pio_sm_put_blocking(np_pio, sm, leds[i].G);
       pio_sm_put_blocking(np_pio, sm, leds[i].R);
@@ -85,8 +89,7 @@ void npWrite() {
     }
 }
 ```
-
-
+#### Utilização do Buzzer
 
 
 
