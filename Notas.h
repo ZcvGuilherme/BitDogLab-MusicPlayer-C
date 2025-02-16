@@ -39,6 +39,7 @@ typedef pixel_t npLED_t;
 struct pixel_t {
     uint8_t G, R, B; // Três valores de 8-bits, cada um, compõem um pixel.
 };
+
 typedef struct {
     uint note;
     npLED_t color;
@@ -114,13 +115,6 @@ NoteMapping note_mappings[] = {
 
 
 
-
-
-
-
-
-
-
 // Definição das durações das notas
 #define SEMIBREVE      2000   // Semibreve (4 tempos)
 #define SEMIBREVE_P    3000   // Semibreve pontuada (4 + 2 = 6 tempos)
@@ -166,7 +160,6 @@ const uint star_wars_notes[] = {
     fa, MI, MI, SOL, MI, DO, si, la,
     sol, MI, SOL, MI, DO, si, la, sol
 };
-
 
 const uint star_wars_durations[] = {
     SEMINIMA, SEMINIMA, SEMINIMA, SEMINIMA_P, COLCHEIA, MINIMA, SEMINIMA, SEMINIMA_P,

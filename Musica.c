@@ -52,8 +52,11 @@ void npSetLED(const uint index, const uint8_t r, const uint8_t g, const uint8_t 
 }
 
 void npClear() {
-    for (uint i = 0; i < LED_COUNT; ++i)
+    for (uint i = 0; i < LED_COUNT; ++i){
       npSetLED(i, 0, 0, 0);
+    }
+    npWrite();
+
 }
 
 void npWrite() {
