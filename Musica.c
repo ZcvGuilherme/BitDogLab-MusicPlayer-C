@@ -1,20 +1,17 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
-#include "Notas.h" // Definições das notas musicais
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
-
 #include "ws2818b.pio.h"
 
+#include "Notas.h" 
 // Definição do pino do buzzer
 #define BUZZER_PIN 21
 
 // Definição do número de LEDs e pino.
 #define LED_COUNT 25
 #define LED_PIN 7
-
-
 
 typedef struct pixel_t pixel_t;
 typedef pixel_t npLED_t;
@@ -101,7 +98,6 @@ void play_rest(uint pin) {
     uint slice = pwm_gpio_to_slice_num(pin);
     pwm_set_enabled(slice, false);
 
-    npClear();
 }
 
 void play_music(const uint* notes, const uint* durations, size_t num_notes) {
