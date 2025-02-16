@@ -1,21 +1,21 @@
 # BitDogLab MusicPlayer C
 
- ## Descrição
+ # Descrição
 BitDogLab-MusicPlayer-C é um projeto desenvolvido em C para o Raspberry Pi Pico que utiliza um buzzer e LEDs Neopixel para reproduzir músicas com sincronização visual e sonora. O projeto permite tocar músicas enquanto os led's brilham de acordo com as notas que estão sendo tocadas.
 
- ## Requisitos
+ # Requisitos
 - Raspberry Pi Pico
 - Buzzer Piezoelétrico
 - LEDs Neopixel (WS2812B)
 - Fonte de alimentação compatível
 - Cabos de conexão
 
- ## Configuração do Hardware
+ # Configuração do Hardware
 - **Buzzer:** Conectado ao GPIO 21
 - **LEDs Neopixel:** Conectados ao GPIO 7
 - **Alimentação:** 5V para os LEDs e 3.3V para o Raspberry Pi Pico
 
- ## Descrição do Código
+ # Descrição do Código
  ### Bibliotecas Utilizadas
  - stdio.h
  - pico/stdlib.h
@@ -26,13 +26,15 @@ BitDogLab-MusicPlayer-C é um projeto desenvolvido em C para o Raspberry Pi Pico
  - Notas.h
    
  ### Definição de elementos (Notas.h)
- O arquivo Notas.h define as notas e suas respectivas frequencias (Hz).
- Além disso, ele define estruturas como pixel_t e NoteMapping, responsáveis por levar as informações do RGB e posição das notas.
- Após isso, são definidos os tempos de duração das notas, tendo desde a Semibreve (2 seg) até a Fusa (62 ms), também são definidos os tempos pontuados (NOME_DO_TEMPO_P), que simbolizam o tempo + metade do valor.
- Depois apenas algumas músicas que eu fiz, com o intuito de demonstrar o uso, a estrutura para criar sua música é:
-- const uint nome_da_musica_notes[]
-- const uint nome_da_musica_durations[]
- Como o nome sugere, o primeiro array contém as notas, e no segundo array vem a duração de cada nota.
+ O arquivo `Notas.h` contém a definição das notas musicais e suas respectivas frequências em Hz. Além disso, são declaradas estruturas como `pixel_t` e `NoteMapping`, responsáveis por armazenar informações sobre a cor (RGB) e a posição das notas.
+
+O arquivo também especifica os tempos de duração das notas, abrangendo desde a Semibreve (2 segundos) até a Fusa (62 ms). Os tempos pontuados (por exemplo, `NOME_DO_TEMPO_P`) representam a duração de uma nota somada à metade do seu valor original.
+
+Para exemplificar o uso dessas definições, o arquivo inclui algumas músicas de demonstração. A estrutura para criar sua própria música é simples:
+
+`const uint nome_da_musica_notes[]`: Este array contém as notas musicais.
+`const uint nome_da_musica_durations[]`: Este array define a duração de cada nota correspondente.
+Com isso, o usuário pode facilmente customizar suas músicas, definindo notas e durações de forma eficiente.
 
 ### Principais Métodos
 
@@ -101,11 +103,11 @@ void setup_audio() {
 ```
 
 #### Método para tocar um som
-Este método toca uma nota musical no buzzer com um ciclo de trabalho de 50% usando PWM, recebe como parâmetros:
-- `uint pin` Pino do buzzer conectado
-- `uint16_t wrap` Valor que define o intervalo de cada nota. Cada valor representa uma frequencia.
+A função `play_note()` é responsável por gerar uma nota musical no buzzer utilizando PWM. O método recebe os seguintes parâmetros:
 
-  O método ajusta o buzzer para a frequência correta e ativa os LEDS's correspondentes, dependendo da nota tocada.
+- `uint pin` : O pino do buzzer conectado à placa.
+- `uint16_t wrap`: O valor que define o intervalo de cada nota, representando a frequência correspondente.
+Dentro do método, o valor de `wrap` ajusta a frequência do buzzer e ativa os LEDs correspondentes à nota tocada. O ciclo de trabalho do PWM é fixado em 50% para gerar um som audível.
 ``` C
 void play_note(uint pin, uint16_t wrap) {
     uint slice = pwm_gpio_to_slice_num(pin);
@@ -136,12 +138,12 @@ void play_rest(uint pin) {
 }
 ```
 #### Tocar uma música
-Por fim, o método `play_music` é a junção de todos os métodos anteriores, ele recebe como parâmetro:
-- `notes` Um array de notas musicais representadas por valores PWM
-- `durations` Um array com a duração de cada nota
-- `num_notes` Número total de notas na música
+A função `play_music()` é a principal responsável por tocar uma sequência de notas musicais. Ela utiliza as funções anteriores para tocar cada nota da música de acordo com sua duração. Os parâmetros dessa função são:
 
-Itera pelas notas e toca cada uma delas no buzzer, utilizando o `play_note`, aguardando a duração apropriada para cada uma. Após cada nota, o buzzer é silenciado brevemente antes de passar para a próxima nota.
+- `notes` : Um array contendo as notas musicais representadas pelos valores PWM.
+- `durations` : Um array com os tempos de duração de cada nota.
+- `num_notes` : O número total de notas na música.
+A função percorre as notas, tocando cada uma no buzzer com a duração apropriada e silenciando o buzzer brevemente entre elas.
 
 ``` C
 void play_music(const uint* notes, const uint* durations, size_t num_notes) {
@@ -164,7 +166,7 @@ void play_music(const uint* notes, const uint* durations, size_t num_notes) {
 
 
 ### Método Principal
-O método principal incializa os componentes e utiliza o método `play_music`, nesse momento, você pode selecionar uma música que já foi criada ou que você mesmo criou, contanto que siga a estrutura definida, com o único detalhe de você precisar passar o cálculo do tamanho da música diretamente no método.
+No método principal, inicializamos os componentes e chamamos a função `play_music()` para tocar uma música previamente definida. Você pode selecionar uma música existente ou criar a sua própria, contanto que siga a estrutura esperada (com arrays de notas e durações). A função `sizeof(megalovania_refrao) / sizeof(megalovania_refrao[0])` é utilizada para calcular o número de notas na música.
 
 ``` C
 int main() {
@@ -178,9 +180,56 @@ int main() {
     return 0;
 }
 ```
+## Instalação
+# 1. **Clone o repositório**
+Clone o repositório para seu ambiente local usando Git:
+``` git
+git clone https://github.com/usuario/repo.git
+cd repo
+```
+# 2. **Instale as dependências**
+Este projeto utiliza a biblioteca `pico-sdk` para o Raspberry Pi. Para instalar as dependências siga os seguintes passos:
+1. instalar o `pico-sdk` (se necessário)
+```bash
+cd ~
+git clone https://github.com/raspberrypi/pico-sdk.git
+cd pico-sdk
+git submodule update --init --recursive
+
+export PICO_SDK_PATH=~/pico-sdk
+
+source ~/.bashrc
+```
+
+2. Instalar o `CMake` e outras depêndencias
+Você precisará do CMake para compilar o código:
+``` bash
+sudo apt update
+sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
+```
+
+# 3. **Compilação**
+Com o ambiente configurado e as dependências instaladas, vá para o diretório do projeto e compile o código com o CMake:
+```bash
+mkdir build
+cd build
+```
+
+``` bash
+cmake ..
+```
+
+```bash
+make
+```
+
+# 4. **Conectar o Hardware**
+Conecte o Buzzer e os Leds aos pinos GPIO da sua placa. Certifique-se de que o buzzer está conectado ao pino configurado no código (`BUZZER_PIN`), faça o mesmo com os Led's.
 
 
+#Créditos
+Este código foi feito baseado na documentação da BitDogLab, quaisquer dúvidas, pode pesquisar em: https://github.com/BitDogLab/BitDogLab-C/tree/main
 
-
+A lógica desse código foi feita baseada em outro código de minha autoria, caso tenha interesse: https://github.com/ZcvGuilherme/BitDogLab-MusicPlayer
 
 
