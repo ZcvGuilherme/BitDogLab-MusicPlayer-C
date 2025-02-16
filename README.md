@@ -89,9 +89,95 @@ void npWrite() {
     }
 }
 ```
-#### Utilização do Buzzer
+### Utilização do Buzzer
+#### Incialização do Buzzer
+O método `setup_audio()` configura o pino do buzzer para funcionar com PWM (modularização por largura de pulso). Ela deve ser chamada no início para inicializar o hardware necessário.
+``` C
+void setup_audio() {
+    gpio_set_function(BUZZER_PIN, GPIO_FUNC_PWM);
+    uint slice = pwm_gpio_to_slice_num(BUZZER_PIN);
+    pwm_set_clkdiv(slice, DIVISOR_CLK_PWM);
+}
+```
+
+#### Método para tocar um som
+Este método toca uma nota musical no buzzer com um ciclo de trabalho de 50% usando PWM, recebe como parâmetros:
+- `uint pin` Pino do buzzer conectado
+- `uint16_t wrap` Valor que define o intervalo de cada nota. Cada valor representa uma frequencia.
+
+  O método ajusta o buzzer para a frequência correta e ativa os LEDS's correspondentes, dependendo da nota tocada.
+``` C
+void play_note(uint pin, uint16_t wrap) {
+    uint slice = pwm_gpio_to_slice_num(pin);
+    pwm_set_wrap(slice, wrap);
+    pwm_set_gpio_level(pin, wrap / 2); // Duty cycle de 50%
+    pwm_set_enabled(slice, true);
+
+    for (int i = 0; i < sizeof(note_mappings) / sizeof(NoteMapping); i++) {
+        if (wrap == note_mappings[i].note) {
+            npSetLED(note_mappings[i].position, note_mappings[i].color.R, note_mappings[i].color.G, note_mappings[i].color.B);
+            npWrite();  // Atualiza os LEDs
+            break;
+        }
+    }
+    npClear();
+}
+```
+
+#### Desligar o Buzzer
+O método `play_rest(uint pin)`  é muito importante para garantir o tempo entre as notas e que o buzzer pare de tocar quando necessário, ele recebe como parâmetro apenas o pino do buzzer, com a única função de interromper qualquer som em produção.
+
+``` C
+void play_rest(uint pin) {
+    uint slice = pwm_gpio_to_slice_num(pin);
+    pwm_set_enabled(slice, false);
+
+    npClear();
+}
+```
+#### Tocar uma música
+Por fim, o método `play_music` é a junção de todos os métodos anteriores, ele recebe como parâmetro:
+- `notes` Um array de notas musicais representadas por valores PWM
+- `durations` Um array com a duração de cada nota
+- `num_notes` Número total de notas na música
+
+Itera pelas notas e toca cada uma delas no buzzer, utilizando o `play_note`, aguardando a duração apropriada para cada uma. Após cada nota, o buzzer é silenciado brevemente antes de passar para a próxima nota.
+
+``` C
+void play_music(const uint* notes, const uint* durations, size_t num_notes) {
+    size_t i = 0;
+    while (i < num_notes) {
+        if (notes[i] != PAUSE) {
+            play_note(BUZZER_PIN, notes[i]);  // Toca a nota
+        }
+        sleep_ms(durations[i]);  // Espera o tempo correspondente
+        play_rest(BUZZER_PIN);  // Desliga o buzzer (PWM)
+        sleep_ms(10);  // Pequena pausa entre as notas
+        i++;  // Avança para a próxima nota
+    }
+
+    // Desliga o buzzer após a música acabar
+    play_rest(BUZZER_PIN);
+    npClear();
+}
+```
 
 
+### Método Principal
+O método principal incializa os componentes e utiliza o método `play_music`, nesse momento, você pode selecionar uma música que já foi criada ou que você mesmo criou, contanto que siga a estrutura definida, com o único detalhe de você precisar passar o cálculo do tamanho da música diretamente no método.
+
+``` C
+int main() {
+    stdio_init_all();
+    setup_audio();
+    npInit(LED_PIN);
+    npClear();
+    play_music(megalovania_refrao, megalovania_refrao_durations, sizeof(megalovania_refrao) / sizeof(megalovania_refrao[0]));
+
+    npClear();
+    return 0;
+}
+```
 
 
 
