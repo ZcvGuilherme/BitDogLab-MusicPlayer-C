@@ -83,7 +83,7 @@ void setup_audio() {
 void play_note(uint pin, uint16_t wrap) {
     uint slice = pwm_gpio_to_slice_num(pin);
     pwm_set_wrap(slice, wrap);
-    pwm_set_gpio_level(pin, wrap / 2); // Duty cycle de 50%
+    pwm_set_gpio_level(pin, wrap / 2); 
     pwm_set_enabled(slice, true);
 
     for (int i = 0; i < sizeof(note_mappings) / sizeof(NoteMapping); i++) {
@@ -130,4 +130,5 @@ int main() {
 
     npClear();
     return 0;
+    
 }
